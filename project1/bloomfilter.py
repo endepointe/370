@@ -2,14 +2,14 @@
 '''
 CS 370
 Project 1
-Alvin Johns 
+Alvin Johns
 
 In a production environment, any password greater than 16 would
 be rejected.
 
-The number of bits required to reach probability, P(k), where 
+The number of bits required to reach probability, P(k), where
 
-  k = the number of hash functions 
+  k = the number of hash functions
   n = number of expected insertions
   m = number of bits (the unknown)
 
@@ -60,7 +60,7 @@ def main():
   outfile5.write(str(in_content[0]))
 
   print("Creating bloom filters... Please wait...")
- 
+
   ###################################################
   # Since all hash functions have a range of 32 bits,
   # choosing a max value of:
@@ -68,14 +68,14 @@ def main():
 
   ##########################
   # Number of hash functions
-  k_5 = 5 
+  k_5 = 5
   k_3 = 3
-  m = 4294967295 
+  m = 4294967295
   m_3 = math.ceil((m / k_3))
   m_5 = math.ceil((m / k_5))
 
-  ####################  
-  # create a bit array 
+  ####################
+  # create a bit array
   zeroes_3 = '0' * m_3
   bloom_filter_3 = bitarray(zeroes_3)
   zeroes_5 = '0' * m_5
@@ -87,14 +87,14 @@ def main():
   bf_5 = bitarray(zeroes_5)
 
   ########################################
-  # flags for whether the password matches 
+  # flags for whether the password matches
   maybe_3 = False
   maybe_5 = False
- 
-  ########################################### 
-  # used to find the average time it takes to 
+
+  ###########################################
+  # used to find the average time it takes to
   # check each password
-  total_time_ns_3 = 0 
+  total_time_ns_3 = 0
   total_time_ns_5 = 0
 
   ####################################################
@@ -107,7 +107,7 @@ def main():
     h2 = mmh3.hash(badpw, signed=False)
     h3 = spookyhash.hash32(badpw)
     h4 = xxhash.xxh32(badpw).intdigest()
-    h5 = fnv.hash(badpw, algorithm=fnv.fnv, bits=32) 
+    h5 = fnv.hash(badpw, algorithm=fnv.fnv, bits=32)
 
     # 3 hashes
     bloom_filter_3[h1 % m_3] = 1
@@ -132,7 +132,7 @@ def main():
     h2 = mmh3.hash(pw, signed=False)
     h3 = spookyhash.hash32(pw)
     h4 = xxhash.xxh32(pw).intdigest()
-    h5 = fnv.hash(pw, algorithm=fnv.fnv, bits=32) 
+    h5 = fnv.hash(pw, algorithm=fnv.fnv, bits=32)
 
     ##########
     # 3 hashes
@@ -142,7 +142,7 @@ def main():
 
     ############
     # time start
-    t3_0 = time.perf_counter_ns() 
+    t3_0 = time.perf_counter()
     # compare bloom filters
     if 1 == bloom_filter_3[h1 % m_3] and bf_3[h1 % m_3] == 1:
       if 1 == bloom_filter_3[h2 % m_3] and bf_3[h2 % m_3] == 1:
@@ -154,14 +154,14 @@ def main():
         maybe_3 = False
     else:
       maybe_3 = False
-    t3_1 = time.perf_counter_ns()
+    t3_1 = time.perf_counter()
     total_3 = t3_1 - t3_0
-    total_time_ns_3 += total_3 
+    total_time_ns_3 += total_3
     # time end
     ##########
 
 
-    # if maybe_3 is true, the word might be in 
+    # if maybe_3 is true, the word might be in
     # the list of bad passwords.
     if maybe_3 == True:
       s = str(bytes(pw.strip()), 'utf-8') + " maybe " + "\n"
@@ -177,10 +177,10 @@ def main():
     bf_5[h3 % m_5] = 1
     bf_5[h4 % m_5] = 1
     bf_5[h5 % m_5] = 1
- 
+
     ############
     # time start
-    t5_0 = time.perf_counter_ns() 
+    t5_0 = time.perf_counter()
     # compare bloom filters
     if 1 == bloom_filter_5[h1 % m_5] and bf_5[h1 % m_5] == 1:
       if 1 == bloom_filter_5[h2 % m_5] and bf_5[h2 % m_5] == 1:
@@ -198,14 +198,14 @@ def main():
         maybe_5 = False
     else:
       maybe_5 = False
-    t5_1 = time.perf_counter_ns()
+    t5_1 = time.perf_counter()
     total_5 = t5_1 - t5_0
     total_time_ns_5 += total_5
     # time end
     ##########
 
     ########################################
-    # if maybe is true, the word might be in 
+    # if maybe is true, the word might be in
     # the list of bad passwords.
     if maybe_5 == True:
       s = str(bytes(pw.strip()), 'utf-8') + " maybe " + "\n"
