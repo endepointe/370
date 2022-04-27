@@ -79,7 +79,7 @@ def main():
   zeroes_3 = '0' * m_3
   bloom_filter_3 = bitarray(zeroes_3)
   zeroes_5 = '0' * m_5
-  bloom_filter_5 = bitarray(zeroes_3)
+  bloom_filter_5 = bitarray(zeroes_5)
 
   ##########################################
   # bloom filter for passwords to be checked
