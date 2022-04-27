@@ -79,7 +79,7 @@ def main():
   zeroes_3 = '0' * m_3
   bloom_filter_3 = bitarray(zeroes_3)
   zeroes_5 = '0' * m_5
-  bloom_filter_5 = bitarray(zeroes_5)
+  bloom_filter_5 = bitarray(zeroes_3)
 
   ##########################################
   # bloom filter for passwords to be checked
@@ -122,6 +122,7 @@ def main():
     bloom_filter_5[h5 % m_5] = 1
   # end of initial bloom filter to check against
   ##############################################
+
 
   ###############################################
   # match the password with list of bad passwords
@@ -227,7 +228,7 @@ def main():
   p_3 = float(1 - (math.e ** ((-1*in_count*k_3)/m_3))) ** k_3
   print("\t\t- collision probability:",str(p_3))
   print("\t\t- average time to check:", float(total_time_ns_3 / in_count), "ns")
-
+  
   print("\t+", sys.argv[4])
   print("\t\t- bloom filter size:", bf_5.buffer_info()[1], "bytes")
   print("\t\t- hash count:", k_5)
