@@ -52,12 +52,10 @@ def main():
   in_file = open(sys.argv[2], encoding="unicode_escape")
   in_content = in_file.readlines()
   outfile3 = open(sys.argv[3],'w')
-  outfile5 = open(sys.argv[4], 'w')
 
-  #################################################
-  # Write the number of entries to each output file
+  ############################################
+  # Write the number of entries to output file
   outfile3.write(str(in_content[0]))
-  outfile5.write(str(in_content[0]))
 
   print("Creating bloom filters... Please wait...")
 
@@ -68,34 +66,27 @@ def main():
 
   ##########################
   # Number of hash functions
-  #k_5 = 5
   k_3 = 3
   m = 4294967295
   m_3 = math.ceil((m / k_3))
-  #m_5 = math.ceil((m / k_5))
 
   ####################
   # create a bit array
   zeroes_3 = '0' * m_3
   bloom_filter_3 = bitarray(zeroes_3)
-  #zeroes_5 = '0' * m_5
-  #bloom_filter_5 = bitarray(zeroes_5)
 
   ##########################################
   # bloom filter for passwords to be checked
   bf_3 = bitarray(zeroes_3)
-  #bf_5 = bitarray(zeroes_5)
 
   ########################################
   # flags for whether the password matches
   maybe_3 = False
-  #maybe_5 = False
 
   ###########################################
   # used to find the average time it takes to
   # check each password
   total_time_ns_3 = 0
-  #total_time_ns_5 = 0
 
   ####################################################
   # Setup the hashes and fill in the bitarray for each
@@ -106,22 +97,12 @@ def main():
     h1 = zlib.adler32(badpw)
     h2 = mmh3.hash(badpw, signed=False)
     h3 = spookyhash.hash32(badpw)
-    #h4 = xxhash.xxh32(badpw).intdigest()
-    #h5 = fnv.hash(badpw, algorithm=fnv.fnv, bits=32)
 
     # 3 hashes
     bloom_filter_3[h1 % m_3] = 1
     bloom_filter_3[h2 % m_3] = 1
     bloom_filter_3[h3 % m_3] = 1
 
-    # 5 hashes
-    '''
-    bloom_filter_5[h1 % m_5] = 1
-    bloom_filter_5[h2 % m_5] = 1
-    bloom_filter_5[h3 % m_5] = 1
-    bloom_filter_5[h4 % m_5] = 1
-    bloom_filter_5[h5 % m_5] = 1
-    '''
   # end of initial bloom filter to check against
   ##############################################
 
@@ -134,10 +115,6 @@ def main():
     h1 = zlib.adler32(pw)
     h2 = mmh3.hash(pw, signed=False)
     h3 = spookyhash.hash32(pw)
-    '''
-    h4 = xxhash.xxh32(pw).intdigest()
-    h5 = fnv.hash(pw, algorithm=fnv.fnv, bits=32)
-    '''
 
     ##########
     # 3 hashes
@@ -165,7 +142,6 @@ def main():
     # time end
     ##########
 
-
     # if maybe_3 is true, the word might be in
     # the list of bad passwords.
     if maybe_3 == True:
@@ -175,51 +151,6 @@ def main():
       s = str(bytes(pw.strip()), 'utf-8') + " no " + "\n"
       outfile3.write(s)
 
-    ##########
-    # 5 hashes
-    '''
-    bf_5[h1 % m_5] = 1
-    bf_5[h2 % m_5] = 1
-    bf_5[h3 % m_5] = 1
-    bf_5[h4 % m_5] = 1
-    bf_5[h5 % m_5] = 1
-
-    ############
-    # time start
-    t5_0 = time.perf_counter()
-    # compare bloom filters
-    if 1 == bloom_filter_5[h1 % m_5] and bf_5[h1 % m_5] == 1:
-      if 1 == bloom_filter_5[h2 % m_5] and bf_5[h2 % m_5] == 1:
-        if 1 == bloom_filter_5[h3 % m_5] and bf_5[h3 % m_5] == 1:
-          if 1 == bloom_filter_5[h4 % m_5] and bf_5[h4 % m_5] == 1:
-            if 1 == bloom_filter_5[h5 % m_5] and bf_5[h5 % m_5] == 1:
-              maybe_5 = True
-            else:
-              maybe_5 = False
-          else:
-            maybe_5 = False
-        else:
-          maybe_5 = False
-      else:
-        maybe_5 = False
-    else:
-      maybe_5 = False
-    t5_1 = time.perf_counter()
-    total_5 = t5_1 - t5_0
-    total_time_ns_5 += total_5
-    # time end
-    ##########
-
-    ########################################
-    # if maybe is true, the word might be in
-    # the list of bad passwords.
-    if maybe_5 == True:
-      s = str(bytes(pw.strip()), 'utf-8') + " maybe " + "\n"
-      outfile5.write(s)
-    else:
-      s = str(bytes(pw.strip()), 'utf-8') + " no " + "\n"
-      outfile5.write(s)
-    '''
   # end of password matching
   ##########################
 
@@ -234,17 +165,6 @@ def main():
   p_3 = float(1 - (math.e ** ((-1*in_count*k_3)/m_3))) ** k_3
   print("\t\t- collision probability:",str(p_3))
   print("\t\t- average time to check:", float(total_time_ns_3 / in_count), "ns")
-  
-  '''
-  print("\t+", sys.argv[4])
-  print("\t\t- bloom filter size:", bf_5.buffer_info()[1], "bytes")
-  print("\t\t- hash count:", k_5)
-  print("\t\t- bit count:", m_5)
-  print("\t\t- input count:", in_count)
-  p_5 = float(1 - (math.e ** ((-1*in_count*k_5)/m_5))) ** k_5
-  print("\t\t- collision probability:",str(p_5))
-  print("\t\t- average time to check:", float(total_time_ns_5 / in_count), "ns")
-  '''
 
 if __name__ == '__main__':
     main()

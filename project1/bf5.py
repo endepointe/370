@@ -51,12 +51,10 @@ def main():
   dict_content = dict_file.readlines()
   in_file = open(sys.argv[2], encoding="unicode_escape")
   in_content = in_file.readlines()
-  outfile3 = open(sys.argv[3],'w')
-  outfile5 = open(sys.argv[4], 'w')
+  outfile5 = open(sys.argv[3], 'w')
 
-  #################################################
-  # Write the number of entries to each output file
-  outfile3.write(str(in_content[0]))
+  ############################################
+  # Write the number of entries to output file
   outfile5.write(str(in_content[0]))
 
   print("Creating bloom filters... Please wait...")
@@ -69,32 +67,25 @@ def main():
   ##########################
   # Number of hash functions
   k_5 = 5
-  k_3 = 3
   m = 4294967295
-  m_3 = math.ceil((m / k_3))
   m_5 = math.ceil((m / k_5))
 
   ####################
   # create a bit array
-  #zeroes_3 = '0' * m_3
-  #bloom_filter_3 = bitarray(zeroes_3)
   zeroes_5 = '0' * m_5
   bloom_filter_5 = bitarray(zeroes_5)
 
   ##########################################
   # bloom filter for passwords to be checked
-  #bf_3 = bitarray(zeroes_3)
   bf_5 = bitarray(zeroes_5)
 
   ########################################
   # flags for whether the password matches
-  #maybe_3 = False
   maybe_5 = False
 
   ###########################################
   # used to find the average time it takes to
   # check each password
-  #total_time_ns_3 = 0
   total_time_ns_5 = 0
 
   ####################################################
@@ -109,12 +100,6 @@ def main():
     h4 = xxhash.xxh32(badpw).intdigest()
     h5 = fnv.hash(badpw, algorithm=fnv.fnv, bits=32)
 
-    # 3 hashes
-    '''
-    bloom_filter_3[h1 % m_3] = 1
-    bloom_filter_3[h2 % m_3] = 1
-    bloom_filter_3[h3 % m_3] = 1
-    '''
     # 5 hashes
     bloom_filter_5[h1 % m_5] = 1
     bloom_filter_5[h2 % m_5] = 1
@@ -136,46 +121,6 @@ def main():
     h4 = xxhash.xxh32(pw).intdigest()
     h5 = fnv.hash(pw, algorithm=fnv.fnv, bits=32)
 
-    ##########
-    # 3 hashes
-    '''
-    bf_3[h1 % m_3] = 1
-    bf_3[h2 % m_3] = 1
-    bf_3[h3 % m_3] = 1
-    '''
-
-    '''
-    ############
-    # time start
-    t3_0 = time.perf_counter()
-    # compare bloom filters
-    if 1 == bloom_filter_3[h1 % m_3] and bf_3[h1 % m_3] == 1:
-      if 1 == bloom_filter_3[h2 % m_3] and bf_3[h2 % m_3] == 1:
-        if 1 == bloom_filter_3[h3 % m_3] and bf_3[h3 % m_3] == 1:
-          maybe_3 = True
-        else:
-          maybe_3 = False
-      else:
-        maybe_3 = False
-    else:
-      maybe_3 = False
-    t3_1 = time.perf_counter()
-    total_3 = t3_1 - t3_0
-    total_time_ns_3 += total_3
-    # time end
-    ##########
-
-
-    # if maybe_3 is true, the word might be in
-    # the list of bad passwords.
-    if maybe_3 == True:
-      s = str(bytes(pw.strip()), 'utf-8') + " maybe " + "\n"
-      outfile3.write(s)
-    else:
-      s = str(bytes(pw.strip()), 'utf-8') + " no " + "\n"
-      outfile3.write(s)
-
-    '''
     ##########
     # 5 hashes
     bf_5[h1 % m_5] = 1
@@ -222,21 +167,9 @@ def main():
   # end of password matching
   ##########################
 
-  print("Bloom filters created. To see the results, open:")
-  '''
+  print("Bloom filter created. To see the results, open:")
+  in_count = len(dict_content)
   print("\t+", sys.argv[3])
-  print("\t\t- bloom filter size:", bf_3.buffer_info()[1], "bytes")
-  print("\t\t- hash count:", k_3)
-  print("\t\t- bit count:", m_3)
-  in_count = len(dict_content)
-  print("\t\t- input count:", in_count)
-  #P(k) = (1 - e^((-kn)/m))^k
-  p_3 = float(1 - (math.e ** ((-1*in_count*k_3)/m_3))) ** k_3
-  print("\t\t- collision probability:",str(p_3))
-  print("\t\t- average time to check:", float(total_time_ns_3 / in_count), "ns")
-  '''
-  in_count = len(dict_content)
-  print("\t+", sys.argv[4])
   print("\t\t- bloom filter size:", bf_5.buffer_info()[1], "bytes")
   print("\t\t- hash count:", k_5)
   print("\t\t- bit count:", m_5)
